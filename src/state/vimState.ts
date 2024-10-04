@@ -8,7 +8,7 @@ import { SurroundState } from '../actions/plugins/surround';
 import { ExCommandLine, SearchCommandLine } from '../cmd_line/commandLine';
 import { Cursor } from '../common/motion/cursor';
 import { configuration } from '../configuration/configuration';
-import { DotCommandStatus, Mode } from '../mode/mode';
+import { DotCommandStatus, Mode, NormalCommandState } from '../mode/mode';
 import { ModeData } from '../mode/modeData';
 import { Logger } from '../util/logger';
 import { SearchDirection } from '../vimscript/pattern';
@@ -93,9 +93,6 @@ export class VimState implements vscode.Disposable {
    */
   public lastCommaRepeatableMovement: IBaseMovement | undefined = undefined;
 
-  // TODO: move into ModeHandler
-  public lastMovementFailed: boolean = false;
-
   /**
    * Keep track of whether the last command that ran is able to be repeated
    * with the dot command.
@@ -104,6 +101,7 @@ export class VimState implements vscode.Disposable {
 
   public dotCommandStatus: DotCommandStatus = DotCommandStatus.Waiting;
   public isReplayingMacro: boolean = false;
+  public normalCommandState: NormalCommandState = NormalCommandState.Waiting;
 
   /**
    * The last visual selection before running the dot command
@@ -179,11 +177,11 @@ export class VimState implements vscode.Disposable {
   /**
    * Initial state of cursors prior to any action being performed
    */
-  private _cursorsInitialState!: Cursor[];
-  public get cursorsInitialState(): Cursor[] {
+  private _cursorsInitialState!: readonly Cursor[];
+  public get cursorsInitialState(): readonly Cursor[] {
     return this._cursorsInitialState;
   }
-  public set cursorsInitialState(cursors: Cursor[]) {
+  public set cursorsInitialState(cursors: readonly Cursor[]) {
     this._cursorsInitialState = [...cursors];
   }
 
